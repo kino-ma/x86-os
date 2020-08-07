@@ -45,7 +45,7 @@ logprefix: %t%e%d
 debug: action=ignore
 info: action=report
 error: action=report
-panic: action=ask
+panic: action=report
 keyboard: type=mf, serial_delay=250, paste_delay=100000, user_shortcut=none
 mouse: type=ps2, enabled=false, toggle=ctrl+mbutton
 speaker: enabled=true, mode=gui

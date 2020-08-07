@@ -15,4 +15,4 @@ run:
 # -drive = file to boot and its format \
 # -rtc = on localtime \
 bochs:
-	 bochs -q -f ../bochsrc.bxrc
+	 bochs -q -f ../../env/bochsrc.bxrc
