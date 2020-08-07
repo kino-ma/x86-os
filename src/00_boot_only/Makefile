@@ -9,3 +9,6 @@ run:
 		-boot  order=c                       # drive to boot \
 		-drive file=boot.img,format=raw      # file to boot and its format \
 		-rtc   base=localtime                # on RTC time \
+
+bochs:
+	 bochs -q -f ../bochsrc.bxrc
