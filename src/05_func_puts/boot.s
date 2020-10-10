@@ -34,6 +34,8 @@ ipl:
     cdecl 	itoa, -8086, .s1, 8, 10, 0b0011 ; "-   8086"
     cdecl	puts, .s1
 
+    cdecl   reboot
+
     jmp		$ ; do nothing
 
 .s0		db "Hello world", 0x0A, 0x0D, 0
@@ -45,6 +47,7 @@ BOOT:             ; ブートドライブに関する情報
 
 %include "../modules/real/puts.s"
 %include "../modules/real/itoa.s"
+%include "../modules/real/reboot.s"
 
     times	510 - ($ - $$) db 0x00
     db		0x55, 0xAA
