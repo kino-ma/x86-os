@@ -1,13 +1,16 @@
-buildrun: build run
+SRC := boot.s ../modules/*/*.s ../include/*.s
+IMG := boot.img
 
-build:
+default: qemu
+
+$(IMG): $(SRC)
 	nasm boot.s -o boot.img -l boot.lst
 
-run:
+qemu: $(IMG)
 	qemu-system-i386\
 		-m     size=256M \
 		-boot  order=c \
-		-drive file=boot.img,format=raw \
+		-drive file=$(IMG),format=raw \
 		-rtc   base=localtime \
 
 # -m = memory size to use \
@@ -21,4 +24,4 @@ bochs:
 clean:
 	rm -rf *.img *.lst
 
-.PHONY: buildrun build run bochs clean
+.PHONY: default qemu bochs clean

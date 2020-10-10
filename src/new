@@ -1,4 +1,0 @@
-#!/bin/sh
-
-old=$(ls -td */ | head -n1)
-cp -R $old "$1"
