@@ -2,7 +2,7 @@ BOOT_LOAD	equ		0x7C00 ; ブートプログラムのロード位置
 
 ORG		BOOT_LOAD          ; プログラムがロードされるアドレスのオフセットをアセンブラに知らせる
 
-%include "../include/macro.s"
+%include "./include/macro.s"
 
 entry:
     jmp		ipl
@@ -45,9 +45,9 @@ ALIGN	2, db 0
 BOOT:             ; ブートドライブに関する情報
 .DRIVE:		dw 0  ; ドライブ番号
 
-%include "../modules/real/puts.s"
-%include "../modules/real/itoa.s"
-%include "../modules/real/reboot.s"
+%include "./modules/real/puts.s"
+%include "./modules/real/itoa.s"
+%include "./modules/real/reboot.s"
 
     times	510 - ($ - $$) db 0x00
     db		0x55, 0xAA

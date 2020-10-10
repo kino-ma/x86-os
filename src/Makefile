@@ -1,4 +1,4 @@
-SRC := boot.s ../modules/*/*.s ../include/*.s
+SRC := boot.s modules/*/*.s include/*.s
 IMG := boot.img
 
 default: qemu
