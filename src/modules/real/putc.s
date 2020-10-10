@@ -1,13 +1,14 @@
-; +4: output char
-; +2: IP (return address)
 putc:
+	; +4: output char
+	; +2: IP (return address)
+
 	; build stack frame
 	push	bp ; 元の値
 	mov		bp, sp
 
 	; save registers
 	push	ax
-	push 	bx
+	push	bx
 
 	; start procedure
 	mov		al, [bp + 4] ; get char to output
