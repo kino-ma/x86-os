@@ -19,7 +19,7 @@ qemu: $(IMG)
 # -rtc = on localtime \
 
 bochs:
-	 bochs -q -f ../../env/bochsrc.bxrc
+	 bochs -q -f ../env/bochsrc.bxrc
 
 clean:
 	rm -rf *.img *.lst
