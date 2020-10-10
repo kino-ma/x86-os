@@ -25,21 +25,32 @@ ipl:
     mov		[BOOT.DRIVE], dl ; save boot drive
 
     ; itoa(num, buf, radix, bufsize, flags)
-    cdecl 	itoa, 8086, .s1, 8, 10, 0b0001  ; "    8086"
-    cdecl	puts, .s1
+    cdecl	puts, .s0
 
-    cdecl 	itoa, 8086, .s1, 8, 10, 0b0011  ; "+   8086"
-    cdecl	puts, .s1
+    ; read next 512 bytes
+    mov     ah, 0x02            ; 読み込み命令
+    mov     al, 1               ; 読み込むセクタ数
+    mov     ch, 0x00            ; シリンダ
+    mov     cl, 0x02            ; セクタ
+    mov     dh, 0x00            ; ヘッド位置
+    mov     dl, [BOOT.DRIVE]    ; ドライブ番号
+    mov     bx, 0x7C00 + 512    ; オフセット
 
-    cdecl 	itoa, -8086, .s1, 8, 10, 0b0011 ; "-   8086"
-    cdecl	puts, .s1
+;if (CF = BIOS(0x13, 0x02)) {
+;    puts(.e0);
+;    reboot();
+;}
+    int     0x13                ; 
+.10Q: jnc   .10E
+.10T: cdecl puts, .e0
+    call reboot
+.10E:
 
-    cdecl   reboot
+; next stage
+    jmp stage_2
 
-    jmp		$ ; do nothing
-
-.s0		db "Hello world", 0x0A, 0x0D, 0
-.s1		db "........",    0x0A, 0x0D, 0
+.s0		db "Booting...", 0x0A, 0x0D, 0
+.e0     db "Error: sector read", 0
 
 ALIGN	2, db 0
 BOOT:             ; ブートドライブに関する情報
@@ -51,3 +62,14 @@ BOOT:             ; ブートドライブに関する情報
 
     times	510 - ($ - $$) db 0x00
     db		0x55, 0xAA
+
+
+; 512 ~
+stage_2:
+    cdecl   puts, .s0
+
+    jmp     $   ; while (1);
+
+.s0     db "Hello Stage 2!", 0x0a, 0x0d, 0
+
+    times   (1024 * 8) - ($ - $$) db 0
