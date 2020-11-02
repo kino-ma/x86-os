@@ -2,7 +2,9 @@ BOOT_LOAD	equ		0x7C00 ; ブートプログラムのロード位置
 
 ORG		BOOT_LOAD          ; プログラムがロードされるアドレスのオフセットをアセンブラに知らせる
 
-%include "./include/macro.s"
+;extern  start
+
+%include "./src_asm//include/macro.s"
 
 entry:
     jmp		ipl
@@ -48,6 +50,7 @@ ipl:
 
 ; next stage
     jmp stage_2
+    ;jmp start
 
 .s0		db "Booting...", 0x0A, 0x0D, 0
 .e0     db "Error: sector read", 0
@@ -56,9 +59,9 @@ ALIGN	2, db 0
 BOOT:             ; ブートドライブに関する情報
 .DRIVE:		dw 0  ; ドライブ番号
 
-%include "./modules/real/puts.s"
-%include "./modules/real/itoa.s"
-%include "./modules/real/reboot.s"
+%include "./src_asm/modules/real/puts.s"
+%include "./src_asm/modules/real/itoa.s"
+%include "./src_asm/modules/real/reboot.s"
 
     times	510 - ($ - $$) db 0x00
     db		0x55, 0xAA

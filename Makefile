@@ -1,10 +1,15 @@
-SRC := boot.s modules/*/*.s include/*.s
+ASM_SRC_DIR := src_asm
+BOOT_SRC := $(ASM_SRC_DIR)/boot.s
+MODULES := $(ASM_SRC_DIR)/modules/*/*.s
+INCLUDES := $(ASM_SRC_DIR)/include/*.s
+SRCS := $(BOOT_SRC) $(MODULES) $(INCLUDES)
 IMG := boot.img
+LST := boot.lst
 
 default: qemu
 
-$(IMG): $(SRC)
-	nasm boot.s -o boot.img -l boot.lst
+$(IMG): $(SRCS)
+	nasm -f bin $(BOOT_SRC) -o $(IMG) -l $(LST)
 
 qemu: $(IMG)
 	qemu-system-i386\
@@ -22,6 +27,6 @@ bochs:
 	 bochs -q -f ../env/bochsrc.bxrc
 
 clean:
-	rm -rf *.img *.lst
+	rm -rf *.img *.lst *.o
 
 .PHONY: default qemu bochs clean

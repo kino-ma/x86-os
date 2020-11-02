@@ -7,6 +7,16 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+panic-halt = "0.2.0"
 
-[build-dependencies]
-cc = "1.0.61"
+[lib]
+crate-type = ["staticlib"]
+
+[build]
+target = "i586-unknown-linux-gnu"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
