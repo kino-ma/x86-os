@@ -1,32 +1,48 @@
 ASM_SRC_DIR := src_asm
-BOOT_SRC := $(ASM_SRC_DIR)/boot.s
+
+SRC_ASM_BOOT := $(ASM_SRC_DIR)/boot.s
 MODULES := $(ASM_SRC_DIR)/modules/*/*.s
 INCLUDES := $(ASM_SRC_DIR)/include/*.s
-ASM_SRCS := $(BOOT_SRC) $(MODULES) $(INCLUDES)
-IMG := build/boot.img
+ASM_SRCS := $(SRC_ASM_BOOT) $(MODULES) $(INCLUDES)
+
 LST := boot.lst
 
 LD_SCRIPT := kernel.ld
 
-RUST_KERN := target/build-target/release/libx86_os.a
 BOOT_LOAD := build/bootloader.o
+
+_RUST_RELEASE := target/build-target/release/libx86_os.a
+RUST_KERN := build/rust_kernel.a
+KERNEL := build/kernel.bin
+
+IMG := boot.img
 
 default: qemu
 
-$(IMG): $(BOOT_LOAD) $(RUST_KERN) $(LD_SCRIPT)
+$(IMG): $(BOOT_LOAD) $(RUST_KERN)
+	cp $(BOOT_LOAD) $(IMG)
+	#cat $(KERNEL) >> $(IMG)
+
+
+$(KERNEL): $(RUST_KERN) $(ASM_STAGE2) $(LD_SCRIPT)
 	ld -n -m elf_i386 \
-		-o $(IMG) \
+		-o $(KERNEL) \
 		-T $(LD_SCRIPT) \
 		$(RUST_KERN) \
-		$(BOOT_LOAD)
+		$(ASM_STAGE2)
 
 $(BOOT_LOAD): $(ASM_SRCS)
-	nasm -f elf32 -g $(BOOT_SRC) -o $(BOOT_LOAD)
+	nasm $(SRC_ASM_BOOT) -o $(BOOT_LOAD)
 
 $(RUST_KERN): src/lib.rs
 	RUST_TARGET_PATH=$(shell pwd) xargo build --target build-target --release
+	cp $(_RUST_RELEASE) $(RUST_KERN)
 
-qemu: $(IMG)
+$(ASM_STAGE2): $(SRC_ASM_STAGE2)
+	nasm -f elf32 $(SRC_ASM_STAGE2) -o $(ASM_STAGE2)
+
+
+qemu: all
 	qemu-system-i386\
 		-m     size=256M \
 		-boot  order=c \
@@ -42,12 +58,8 @@ bochs:
 	 bochs -q -f ../env/bochsrc.bxrc
 
 clean:
-	rm -rf *.img *.lst *.o
+	rm -rf $(IMG) $(LST) $(BOOT_LOAD) $(RUST_KERN)
 
-.PHONY: default qemu bochs clean
+all: $(IMG)
 
-obj:
-	objcopy -I binary -O elf32-i386 a.out b.out
-
-show:
-	objdump -D -b binary -m i386 a.out | less
+.PHONY: default qemu bochs clean all

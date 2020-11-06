@@ -1,17 +1,16 @@
 BOOT_LOAD	equ		0x7C00 ; ブートプログラムのロード位置
+;STAGE_2     equ     0xc200 ; stage_2 load position
 
-;ORG		BOOT_LOAD          ; プログラムがロードされるアドレスのオフセットをアセンブラに知らせる
 
-extern start_rs
+ORG		BOOT_LOAD          ; プログラムがロードされるアドレスのオフセットをアセンブラに知らせる
 
-global _start, start_rs
+;global _start
 
 
 %include "./src_asm/include/macro.s"
 
 _start:
     jmp		ipl
-
     ; BPB (BIOS Parameter Block)
     times	90 - ($ - $$) db 0x90
 
@@ -42,12 +41,12 @@ ipl:
     mov     bx, 0x7C00 + 512    ; オフセット
 
 ;if (CF = BIOS(0x13, 0x02)) {
-;    puts(error);
+;    putserror);
 ;    reboot();
 ;}
     int     0x13                ; 
-    jnc   boot_success
-boot_error: cdecl puts, error
+.10Q:   jnc   boot_success
+booterror: cdecl puts, error
     call reboot
 boot_success:
 
@@ -55,15 +54,15 @@ boot_success:
     jmp stage_2
     ;jmp start_rs
 
-hello	db "hello", 0x0A, 0x0D, 0
-error   db "Error: sector read", 0
+hello:	db "hello boot loader", 0x0A, 0x0D, 0
+error:  db "Error: sector read", 0
 
 ALIGN	2, db 0
 BOOT:             ; ブートドライブに関する情報
 .DRIVE:		dw 0  ; ドライブ番号
 
 %include "./src_asm/modules/real/puts.s"
-;%include "./src_asm/modules/real/itoa.s"
+%include "./src_asm/modules/real/itoa.s"
 %include "./src_asm/modules/real/reboot.s"
 
     times	510 - ($ - $$) db 0x00
@@ -71,12 +70,15 @@ BOOT:             ; ブートドライブに関する情報
 
 
 ; 512 ~
-
+; stage_2
 stage_2:
     cdecl   puts, stage2_str
 
-    jmp     stage_2   ; while (1);
+    jmp     $   ; while (1);
 
-stage2_str  db "", 0x0a, 0x0d, 0
 
+    ;times   (1024 * 8) - ($ - $$) db 0
+
+
+stage2_str  db "this is stage 2", 0x0a, 0x0d, 0
     times   (1024 * 8) - ($ - $$) db 0
