@@ -1,0 +1,23 @@
+[package]
+name = "x86_os"
+version = "0.1.0"
+authors = ["kino-ma <kino.ma.ms@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+panic-halt = "0.2.0"
+x86 = "0.34.0"
+
+[lib]
+crate-type = ["staticlib"]
+
+[build]
+target = "i586-unknown-linux-gnu"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"

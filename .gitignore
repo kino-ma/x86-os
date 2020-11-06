@@ -1,2 +1,9 @@
 *.img
 *.lst
+*.o
+*.a
+
+
+#Added by cargo
+
+/target
