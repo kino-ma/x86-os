@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 panic-halt = "0.2.0"
+x86 = "0.34.0"
 
 [lib]
 crate-type = ["staticlib"]

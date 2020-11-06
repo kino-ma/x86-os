@@ -1,10 +1,10 @@
 #![no_std]
-#![no_main]
+#![feature(global_asm)]
+#![feature(asm)]
 
 use panic_halt as _;
 
 #[no_mangle]
-extern fn start() {
-    let _i = 0;
+pub extern fn start_rs() {
     loop {}
 }
