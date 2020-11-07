@@ -9,7 +9,7 @@ ASM_SRCS := $(SRC_ASM_BOOT) $(SRC_ASM_STAGE2) $(MODULES) $(INCLUDES)
 
 LD_SCRIPT := kernel.ld
 
-BOOT_LOAD := build/bootloader.o
+BOOT_LOAD := build/bootloader.bin
 ASM_STAGE2 := build/stage_2.o
 _RUST_RELEASE := target/build-target/release/libx86_os.a
 RUST_KERN := build/rust_kernel.a
