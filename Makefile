@@ -1,5 +1,6 @@
 ASM_SRC_DIR := src_asm
 LST := boot.lst
+BOCHS_CNFG := ./env/bochsrc.bxrc
 
 SRC_ASM_BOOT := $(ASM_SRC_DIR)/boot.s
 SRC_ASM_STAGE2 := $(ASM_SRC_DIR)/stage_2.s
@@ -32,8 +33,9 @@ $(KERNEL): $(RUST_KERN) $(ASM_STAGE2) $(LD_SCRIPT)
 	ld -n -m elf_i386 \
 		-o $(KERNEL) \
 		-T $(LD_SCRIPT) \
-		$(RUST_KERN) \
 		$(ASM_STAGE2)
+
+		#$(RUST_KERN) \
 
 $(BOOT_LOAD): $(ASM_SRCS)
 	nasm $(SRC_ASM_BOOT) -o $(BOOT_LOAD)
@@ -59,7 +61,7 @@ qemu: all
 # -rtc = on localtime \
 
 bochs:
-	 bochs -q -f ../env/bochsrc.bxrc
+	 bochs -q -f $(BOCHS_CNFG)
 
 clean:
 	rm -rf $(IMG) $(LST) $(OBJS)
