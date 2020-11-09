@@ -28,7 +28,7 @@ read_chs:
     mov     dl, [BOOT.DRIVE]         ; DL = drive no.
     ;mov     ax, 0x0000                  ; AX = 0x0000
     mov     ax, 0x0000
-    mov     es, 0x0000                      ; ES = segment
+    mov     es, ax                      ; ES = segment
     mov     bx, 0x7c00 + 512                ; BX = dst
 
 
