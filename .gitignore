@@ -4,6 +4,9 @@
 *.a
 *.bin
 
+# build object
+build/
+
 
 #Added by cargo
 
