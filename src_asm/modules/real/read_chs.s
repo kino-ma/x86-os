@@ -21,15 +21,16 @@ read_chs:
     ;mov     si, [bp + 4]    ; si: struct drive
 
     ; read sectors
-    mov     ch, 0x00   ; CH = cylinder no (lower byte)
+    mov     ch, [si + drive.cyln]   ; CH = cylinder no (lower byte)
+    ;mov     cl, [si + drive.cyln + 1]   ; CL = cylinder no (upper byte)
     mov     cl, 0x02   ; CL = cylinder no (upper byte)
     ;shl     cl, 6
+    ;or      cl, [si + drive.sect]   ; CL |= sector no
     mov     dh, 0x00       ; DH = head no.
     mov     dl, [BOOT.DRIVE]         ; DL = drive no.
-    ;mov     ax, 0x0000                  ; AX = 0x0000
     mov     ax, 0x0000
     mov     es, ax                      ; ES = segment
-    mov     bx, 0x7c00 + 512                ; BX = dst
+    mov     bx, [bp + 8]            ; dst
 
 
 ;// retry 3 times while neither error nor success
@@ -52,13 +53,14 @@ read_chs:
 read_loop:
     cdecl   puts, try_msg
     mov     ah, 0x02        ; command `read sector`
-    mov     al, 1    ; count of sectors to read
+    mov     al, [bp + 6]    ; count of sectors to read
     int     0x13            ; BIOS intrrupt
     jnc     read_success    ; CF is ON if some error occured
 
 read_fail:
     cdecl   puts, fail_msg
-    jmp     read_finish          ; break
+    mov     ax, 0x0000      ; clear return value
+    jmp     read_finish     ; break
 
 ; .11E
 read_success:

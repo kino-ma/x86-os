@@ -26,7 +26,7 @@ ipl:
     cdecl	puts, hello
 
     ; read all sectors left
-    mov     bx, BOOT_SECT
+    mov     bx, BOOT_SECT - 1
     mov     cx, BOOT_LOAD + SECT_SIZE
 
     ; AX = read_chs(BOOT, BOOT_SECT - 1, BOOT_LOAD + SECT_SIZE)
@@ -39,10 +39,10 @@ ipl:
 ;}
 
     cmp     ax, bx
-    jne     boot_success
+    je      boot_success
 boot_error:
     cdecl puts, error
-    call reboot
+    jmp stage_2
 boot_success:
     cdecl   puts, success
 
@@ -50,7 +50,7 @@ boot_success:
     jmp stage_2
 
 hello:	db "hello boot loader", 0x0A, 0x0D, 0
-error:  db "Error: sector read", 0
+error:  db "Error: sector read", 0x0a, 0x0d, 0
 success:    db "Succedd", 0x0a, 0x0d, 0
 
 ALIGN	2, db 0
