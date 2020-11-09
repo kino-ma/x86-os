@@ -60,8 +60,8 @@ qemu: all
 # -drive = file to boot and its format \
 # -rtc = on localtime \
 
-bochs:
-	 bochs -q -f $(BOCHS_CNFG)
+bochs: $(IMG)
+	bochs -q -f $(BOCHS_CNFG)
 
 clean:
 	rm -rf $(IMG) $(LST) $(OBJS)
