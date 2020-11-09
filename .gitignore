@@ -2,6 +2,7 @@
 *.lst
 *.o
 *.a
+*.bin
 
 
 #Added by cargo
