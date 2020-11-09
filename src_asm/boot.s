@@ -30,42 +30,8 @@ ipl:
     mov     cx, BOOT_LOAD + SECT_SIZE
 
     ; AX = read_chs(BOOT, BOOT_SECT - 1, BOOT_LOAD + SECT_SIZE)
-        cdecl   read_chs, BOOT, bx, cx
+    cdecl   read_chs, BOOT, bx, cx
 
-    ;; copipe
-    
-
-    ;mov     ah, 0x02        ; command `read sector`
-    ;mov     al, 1    ; count of sectors to read
-    ;mov     ch, 0x00   ; CH = cylinder no (lower byte)
-    ;mov     cl, 0x02   ; CL = cylinder no (upper byte)
-    ;;shl     cl, 6
-    ;mov     dh, 0x00       ; DH = head no.
-    ;mov     dl, [BOOT.DRIVE]         ; DL = drive no.
-    ;mov     bx, 0x7c00 + 512                ; BX = dst
-;read;_:
-    ;cdecl   puts, try_msg
-    ;int     0x13            ; BIOS intrrupt
-    ;jnc     boot_success
-
-    ;; copipe end
-
-    ;; copipe two
-    ;mov     ch, 0x00   ; CH = cylinder no (lower byte)
-    ;mov     cl, 0x02   ; CL = cylinder no (upper byte)
-    ;;shl     cl, 6
-    ;mov     dh, 0x00       ; DH = head no.
-    ;mov     dl, [BOOT.DRIVE]         ; DL = drive no.
-    ;;mov     ax, 0x0000                  ; AX = 0x0000
-    ;mov     ax, 0x0000
-    ;mov     es, ax                      ; ES = segment
-    ;mov     bx, 0x7c00 + 512                ; BX = dst
-    ;cdecl   puts, try_msg
-    ;mov     ah, 0x02        ; command `read sector`
-    ;mov     al, 1    ; count of sectors to read
-    ;int     0x13            ; BIOS intrrupt
-    ;jnc     boot_success    ; CF is ON if some error occured
-    ;; copipe two end
 
 ;if (AX == BX) {
 ;    puts(error);
@@ -73,7 +39,7 @@ ipl:
 ;}
 
     cmp     ax, bx
-    jz      boot_success
+    jne     boot_success
 boot_error:
     cdecl puts, error
     call reboot

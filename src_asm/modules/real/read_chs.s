@@ -65,6 +65,9 @@ read_success:
     cdecl   puts, success_msg
     cmp     al, 0
     jne     read_finish
+
+read_continue:
+    cdecl   puts, read_continue
     mov     ax, 0           ; return value
     dec     word [bp - 2]   ; decrement `retry`
     jnz     read_loop
@@ -87,4 +90,5 @@ read_finish:
 
 try_msg: db "try", 0x0a, 0x0d, 0
 success_msg: db "success read", 0x0a, 0x0d, 0
+continue_msg: db "continue reading", 0x0a, 0x0d, 0
 fail_msg: db "fail read", 0x0a, 0x0d, 0
