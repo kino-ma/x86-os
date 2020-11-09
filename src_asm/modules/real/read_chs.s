@@ -7,8 +7,8 @@ read_chs:
 
     push    bp
     mov     bp, sp
-    ;push    3           ; bp - 2 | retry count
-    ;push    0           ; bp - 4 | count of read sectors
+    push    3           ; bp - 2 | retry count
+    push    0           ; bp - 4 | count of read sectors
 
     ; save register
     push    bx
@@ -18,18 +18,23 @@ read_chs:
     push    si
 
     ; start
-    ;mov     si, [bp + 4]    ; si: struct drive
+    mov     si, [bp + 4]    ; si: struct drive
 
     ; read sectors
-    mov     ch, [si + drive.cyln]   ; CH = cylinder no (lower byte)
-    ;mov     cl, [si + drive.cyln + 1]   ; CL = cylinder no (upper byte)
-    mov     cl, 0x02   ; CL = cylinder no (upper byte)
-    ;shl     cl, 6
+    mov     ch, [si + drive.cyln + 0]   ; CH = cylinder no (lower byte)
+
+    ;; !!   cl, [si + drive.cyln + 1]
+    mov     cl, [si + drive.cyln + 1]   ; CL = cylinder no (upper byte)
+    mov     cl, 0   ; CL = cylinder no (upper byte)
+    shl     cl, 6
     ;or      cl, [si + drive.sect]   ; CL |= sector no
-    mov     dh, 0x00       ; DH = head no.
-    mov     dl, [BOOT.DRIVE]         ; DL = drive no.
-    mov     ax, 0x0000
-    mov     es, ax                      ; ES = segment
+    or      cl, 2   ; CL |= sector no
+
+    mov     dh, [si + drive.head]   ; DH = head no.
+    mov     dl, [si + drive.no]     ; DL = drive no.
+
+    mov     ax, 0x0000              ; ES:BX = dest
+    mov     es, ax
     mov     bx, [bp + 8]            ; dst
 
 
