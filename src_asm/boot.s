@@ -1,13 +1,8 @@
-BOOT_LOAD	equ		0x7C00 ; ブートプログラムのロード位置
-;STAGE_2     equ     0xc200 ; stage_2 load position
-
+%include "./src_asm/include/define.s"
+%include "./src_asm/include/macro.s"
 
 ORG		BOOT_LOAD          ; プログラムがロードされるアドレスのオフセットをアセンブラに知らせる
 
-;global _start
-
-
-%include "./src_asm/include/macro.s"
 
 _start:
     jmp		ipl
@@ -26,44 +21,50 @@ ipl:
 
     sti ; accept interrupt
 
-    mov		[BOOT.DRIVE], dl ; save boot drive
+    mov		[BOOT + drive.no], dl ; save boot drive
 
-    ; itoa(num, buf, radix, bufsize, flags)
     cdecl	puts, hello
 
-    ; read next 512 bytes
-    mov     ah, 0x02            ; 読み込み命令
-    mov     al, 1               ; 読み込むセクタ数
-    mov     ch, 0x00            ; シリンダ
-    mov     cl, 0x02            ; セクタ
-    mov     dh, 0x00            ; ヘッド位置
-    mov     dl, [BOOT.DRIVE]    ; ドライブ番号
-    mov     bx, 0x7C00 + 512    ; オフセット
+    ; read all sectors left
+    mov     bx, BOOT_SECT - 1
+    mov     cx, BOOT_LOAD + SECT_SIZE
 
-;if (CF = BIOS(0x13, 0x02)) {
-;    putserror);
+    ; AX = read_chs(BOOT, BOOT_SECT - 1, BOOT_LOAD + SECT_SIZE)
+    cdecl   read_chs, BOOT, bx, cx
+
+
+;if (AX == BX) {
+;    puts(error);
 ;    reboot();
 ;}
-    int     0x13                ; 
-.10Q:   jnc   boot_success
-booterror: cdecl puts, error
-    call reboot
+
+    cmp     ax, bx
+    je      boot_success
+boot_error:
+    cdecl puts, error
+    jmp stage_2
 boot_success:
+    cdecl   puts, success
 
 ; next stage
     jmp stage_2
-    ;jmp start_rs
 
 hello:	db "hello boot loader", 0x0A, 0x0D, 0
-error:  db "Error: sector read", 0
+error:  db "Error: sector read", 0x0a, 0x0d, 0
+success:    db "Succedd", 0x0a, 0x0d, 0
 
 ALIGN	2, db 0
 BOOT:             ; ブートドライブに関する情報
-.DRIVE:		dw 0  ; ドライブ番号
+    istruc drive
+        at drive.no,    dw 0
+        at drive.cyln,  dw 0
+        at drive.head,  dw 0
+        at drive.sect,  dw 2
+    iend
 
 %include "./src_asm/modules/real/puts.s"
-%include "./src_asm/modules/real/itoa.s"
 %include "./src_asm/modules/real/reboot.s"
+%include "./src_asm/modules/real/read_chs.s"
 
     times	510 - ($ - $$) db 0x00
     db		0x55, 0xAA
@@ -71,14 +72,11 @@ BOOT:             ; ブートドライブに関する情報
 
 ; 512 ~
 ; stage_2
-;stage_2:
-;    cdecl   puts, stage2_str
-;
-;    jmp     $   ; while (1);
-;
-;
-;    ;times   (1024 * 8) - ($ - $$) db 0
-;
-;
-;stage2_str  db "this is stage 2", 0x0a, 0x0d, 0
-;    times   (1024 * 8) - ($ - $$) db 0
+stage_2:
+    cdecl   puts, stage2_str
+    jmp $
+
+
+stage2_str  db "this is stage 2", 0x0a, 0x0d, 0
+
+    times   BOOT_SIZE - ($ - $$) db 0
