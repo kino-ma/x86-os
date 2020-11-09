@@ -22,14 +22,11 @@ read_chs:
 
     ; read sectors
     mov     ch, [si + drive.cyln + 0]   ; CH = cylinder no (lower byte)
-
-    ;; !!   cl, [si + drive.cyln + 1]
-    mov     cl, [si + drive.cyln + 1]   ; CL = cylinder no (upper byte)
-    mov     cl, 0   ; CL = cylinder no (upper byte)
+    mov     cl, [si + drive.cyln + 1]   ; CL = cylinder no (upper byte = 0..7)
+    mov     cl, 0   ; CL = cylinder no (upper byte = 8..9)
     shl     cl, 6
-    ;or      cl, [si + drive.sect]   ; CL |= sector no
-    or      cl, 2   ; CL |= sector no
 
+    or      cl, [si + drive.sect]   ; CL |= sector no
     mov     dh, [si + drive.head]   ; DH = head no.
     mov     dl, [si + drive.no]     ; DL = drive no.
 

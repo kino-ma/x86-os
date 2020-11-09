@@ -55,7 +55,6 @@ success:    db "Succedd", 0x0a, 0x0d, 0
 
 ALIGN	2, db 0
 BOOT:             ; ブートドライブに関する情報
-.DRIVE:     dw 0
     istruc drive
         at drive.no,    dw 0
         at drive.cyln,  dw 0
@@ -75,8 +74,8 @@ BOOT:             ; ブートドライブに関する情報
 ; stage_2
 stage_2:
     cdecl   puts, stage2_str
+    jmp $
 
-    jmp     $   ; while (1);
 
 stage2_str  db "this is stage 2", 0x0a, 0x0d, 0
 
