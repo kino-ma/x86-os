@@ -26,11 +26,29 @@ ipl:
     cdecl	puts, hello
 
     ; read all sectors left
-    mov     bx, BOOT_SECT - 1
+    mov     bx, BOOT_SECT
     mov     cx, BOOT_LOAD + SECT_SIZE
 
     ; AX = read_chs(BOOT, BOOT_SECT - 1, BOOT_LOAD + SECT_SIZE)
         cdecl   read_chs, BOOT, bx, cx
+
+    ;; copipe
+    
+
+    ;mov     ah, 0x02        ; command `read sector`
+    ;mov     al, 1    ; count of sectors to read
+    ;mov     ch, 0x00   ; CH = cylinder no (lower byte)
+    ;mov     cl, 0x02   ; CL = cylinder no (upper byte)
+    ;;shl     cl, 6
+    ;mov     dh, 0x00       ; DH = head no.
+    ;mov     dl, [BOOT.DRIVE]         ; DL = drive no.
+    ;mov     bx, 0x7c00 + 512                ; BX = dst
+;read;_:
+    ;cdecl   puts, try_msg
+    ;int     0x13            ; BIOS intrrupt
+    ;jnc     boot_success
+
+    ;; copipe end
 
 ;if (AX == BX) {
 ;    puts(error);
@@ -43,16 +61,18 @@ boot_error:
     cdecl puts, error
     call reboot
 boot_success:
+    cdecl   puts, success
 
 ; next stage
     jmp stage_2
-    ;jmp start_rs
 
 hello:	db "hello boot loader", 0x0A, 0x0D, 0
 error:  db "Error: sector read", 0
+success:    db "Succedd", 0x0a, 0x0d, 0
 
 ALIGN	2, db 0
 BOOT:             ; ブートドライブに関する情報
+.DRIVE:     dw 0
     istruc drive
         at drive.no,    dw 0
         at drive.cyln,  dw 0
