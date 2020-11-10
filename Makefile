@@ -24,9 +24,10 @@ IMG := boot.img
 
 default: qemu
 
-$(IMG): $(BOOT_LOAD) $(RUST_KERN)
+$(IMG): $(BOOT_LOAD) $(KERNEL)
 	cp $(BOOT_LOAD) $(IMG)
-	#cat $(KERNEL) >> $(IMG)
+	cat $(KERNEL) >> $(IMG)
+	truncate -s 8k $(IMG)
 
 
 $(KERNEL): $(RUST_KERN) $(ASM_STAGE2) $(LD_SCRIPT)
@@ -66,6 +67,12 @@ bochs: $(IMG)
 clean:
 	rm -rf $(IMG) $(LST) $(OBJS)
 
+dump_img: $(IMG)
+	objdump -D -z -b binary -mi386 -Maddr16,data16 $(IMG) | less
+
+dump_kern: $(KERNEL)
+	objdump -D -z -b binary -mi386 -Maddr16,data16 $(KERNEL) | less
+
 all: $(IMG)
 
-.PHONY: default qemu bochs clean all
+.PHONY: default qemu bochs clean all dump_img dump_kern

@@ -42,16 +42,12 @@ ipl:
     je      boot_success
 boot_error:
     cdecl puts, error
-    jmp stage_2
+    call reboot
 boot_success:
-    cdecl   puts, success
-
-; next stage
-    jmp stage_2
+    jmp STAGE2_ADDR     ; next stage
 
 hello:	db "hello boot loader", 0x0A, 0x0D, 0
 error:  db "Error: sector read", 0x0a, 0x0d, 0
-success:    db "Succedd", 0x0a, 0x0d, 0
 
 ALIGN	2, db 0
 BOOT:             ; ブートドライブに関する情報
@@ -70,13 +66,4 @@ BOOT:             ; ブートドライブに関する情報
     db		0x55, 0xAA
 
 
-; 512 ~
-; stage_2
-stage_2:
-    cdecl   puts, stage2_str
-    jmp $
-
-
-stage2_str  db "this is stage 2", 0x0a, 0x0d, 0
-
-    times   BOOT_SIZE - ($ - $$) db 0
+; 512 ~  ==stage2==
