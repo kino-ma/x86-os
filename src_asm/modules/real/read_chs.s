@@ -23,7 +23,6 @@ read_chs:
     ; read sectors
     mov     ch, [si + drive.cyln + 0]   ; CH = cylinder no (lower byte)
     mov     cl, [si + drive.cyln + 1]   ; CL = cylinder no (upper byte = 0..7)
-    mov     cl, 0   ; CL = cylinder no (upper byte = 8..9)
     shl     cl, 6
 
     or      cl, [si + drive.sect]   ; CL |= sector no
