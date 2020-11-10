@@ -27,8 +27,13 @@ load_font:
 
 
 sleep:
+    cdecl   puts, .msg
+
+.loop:
     hlt
-    jmp     sleep
+    jmp     .loop
+
+.msg  db "sleep...", 0x0a, 0x0d, 0
 
 
 
