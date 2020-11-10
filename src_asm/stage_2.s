@@ -21,26 +21,15 @@ get_drive:
 .fail_msg   db "get_drive_param failed", 0x0a, 0x0d, 0
 
 .success:
-    mov     ax, [BOOT + drive.no]
-    cdecl   itoa, ax, .p_no, 2, 16, 0b0100
-    mov     ax, [BOOT + drive.cyln]
-    cdecl   itoa, ax, .p_cyln, 2, 16, 0b0100
-    mov     ax, [BOOT + drive.head]
-    cdecl   itoa, ax, .p_head, 2, 16, 0b0100
-    mov     ax, [BOOT + drive.sect]
-    cdecl   itoa, ax, .p_sect, 2, 16, 0b0100
 
-    cdecl   puts, .t_drive
- 
-.t_drive    db 0x0a, 0x0d, "== BOOT DRIVE PARAMETERS ==", 0x0a, 0x0d
-.t_no       db "  drive number : "
-.p_no       db "..", 0x0a, 0x0d
-.t_cyln     db "cylinder count : "
-.p_cyln     db "..", 0x0a, 0x0d
-.t_head     db "    head count : "
-.p_head     db "..", 0x0a, 0x0d
-.t_sect     db "  sector count : "
-.p_sect     db "..", 0x0a, 0x0d, 0
+load_font:
+    cdecl   get_font_addr, FONT
+
+
+sleep:
+    hlt
+    jmp     sleep
+
 
 ALIGN	2, db 0
 BOOT:             ; ブートドライブに関する情報
@@ -51,10 +40,10 @@ BOOT:             ; ブートドライブに関する情報
         at drive.sect,  dw 2
     iend
 
-
-sleep:
-    hlt
-    jmp     sleep
+; 7c00 in book
+FONT:
+    .segment    dw 0
+    .offset     dw 0
 
 
 %include "./src_asm/modules/real/puts.s"
