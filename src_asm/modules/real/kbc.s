@@ -1,4 +1,6 @@
 ; // returns 0 if fail
+; // port 0x60: data write
+; // port 0x64: command write
 ; int kbc_write(char port, char data);
 
 kbc_write:
@@ -38,10 +40,20 @@ kbc_write:
     pop     bp
 
     ret
+
+
+kbc_data_write:
+    cdecl    kbc_write, 0x60, [sp + 4]
+    ret
+    
+kbc_cmd_write:
+    cdecl    kbc_write, 0x64, [sp + 4]
+    ret
     
 
 
 ; // returns 0 if fail
+; // port 0x60: data read
 ; int kbc_read(char port, char *data);
 
 kbc_read:
@@ -84,3 +96,8 @@ kbc_read:
 
     ret
 
+
+kbc_data_read:
+    cdecl    kbc_read, 0x60, [sp + 4]
+    ret
+    
