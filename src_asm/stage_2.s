@@ -28,6 +28,42 @@ load_font:
 mem_info:
     cdecl   get_mem_info
 
+a20_gate:
+    cli                             ; refuce interrupt
+    cdecl   kbc_cmd_write, 0xad     ; disable keyboard
+    cdecl   kbc_cmd_write, 0xd0     ; read output port
+
+    ; fail
+    mov     ax, 1
+    cdecl   kbc_data_read, .key     ; data
+    cmp     ax, 0
+    je      .fail
+
+    mov     bl, [.key]
+    or      bl, 0x02                ; enable A20 gate
+
+    cdecl   kbc_cmd_write, 0xd1     ; write output port
+
+    ;; below
+    ;call    sleep
+    cdecl   kbc_data_write, bx      ; data
+
+    cdecl   kbc_cmd_write, 0xae     ; enable keyboard
+
+    sti                             ; accept interrpt
+
+    cdecl   puts, .success_msg
+
+    jmp     sleep
+
+.fail:
+    cdecl   puts, .fail_msg
+    call    sleep
+
+.key:   dw 0
+.success_msg    db "successfully enabled A20 gate", 0x0a, 0x0d, 0
+.fail_msg    db "fail", 0x0a, 0x0d, 0
+
 sleep:
     cdecl   puts, .msg
 
@@ -47,6 +83,7 @@ sleep:
 %include "./src_asm/modules/real/get_drive_param.s"
 %include "./src_asm/modules/real/get_font_addr.s"
 %include "./src_asm/modules/real/get_mem_info.s"
+%include "./src_asm/modules/real/kbc.s"
 
 section .data
 

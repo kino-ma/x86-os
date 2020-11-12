@@ -45,7 +45,7 @@ $(RUST_KERN): src/lib.rs
 	RUST_TARGET_PATH=$(shell pwd) xargo build --target build-target --release
 	cp $(_RUST_RELEASE) $(RUST_KERN)
 
-$(ASM_STAGE2): $(SRC_ASM_STAGE2)
+$(ASM_STAGE2): $(SRC_ASM_STAGE2) $(MODULES) $(INCLUDES)
 	nasm -f elf32 $(SRC_ASM_STAGE2) -o $(ASM_STAGE2)
 
 
