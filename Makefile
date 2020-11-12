@@ -1,3 +1,9 @@
+ifeq ($(shell uname),Linux)
+	LD := ld
+else
+	LD := i386-elf-ld
+endif
+
 ASM_SRC_DIR := src_asm
 LST := boot.lst
 BOCHS_CNFG := ./env/bochsrc.bxrc
@@ -31,7 +37,7 @@ $(IMG): $(BOOT_LOAD) $(KERNEL)
 
 
 $(KERNEL): $(RUST_KERN) $(ASM_STAGE2) $(LD_SCRIPT)
-	ld -n -m elf_i386 \
+	$(LD) -n -m elf_i386 \
 		-o $(KERNEL) \
 		-T $(LD_SCRIPT) \
 		$(ASM_STAGE2)
