@@ -82,6 +82,7 @@ kbc_data_read:
     push    bp
     mov     bp, sp
     push    cx
+    push    di
 
     mov     cx, 0
 
@@ -109,6 +110,7 @@ kbc_data_read:
 .finish:
     mov     ax, cx
 
+    pop     di
     pop     cx
 
     mov     sp, bp
