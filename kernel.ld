@@ -1,4 +1,4 @@
-ENTRY(stage_2)
+ENTRY("kernel_main")
 OUTPUT_FORMAT("binary")
 
 MEMORY {

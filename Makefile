@@ -27,6 +27,10 @@ LD_SCRIPT := kernel.ld
 _RUST_RELEASE := target/build-target/release/libx86_os.a
 RUST_KERN := build/rust_kernel.a
 
+# assembly library
+SRC_ASM_LIB := src_asm/lib_protect.s
+ASM_LIB := build/asm_lib.o
+
 # kernel binary
 KERNEL := build/kernel.bin
 
@@ -54,6 +58,7 @@ $(KERNEL): $(RUST_KERN) $(ASM_LIB) $(LD_SCRIPT)
 		-T $(LD_SCRIPT) \
 		$(RUST_KERN) \
 		$(ASM_LIB)
+	truncate -s 8k $(KERNEL)
 
 $(RUST_KERN): src/lib.rs
 	RUST_TARGET_PATH=$(shell pwd) xargo build --target build-target --release
@@ -87,6 +92,6 @@ dump_img: $(IMG)
 dump_kern: $(KERNEL)
 	objdump -D -z -b binary -mi386 -Maddr16,data16 $(KERNEL) | less
 
-all: $(IMG)
+all: $(KERNEL) $(IMG)
 
 .PHONY: default qemu bochs clean all dump_img dump_kern
