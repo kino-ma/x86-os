@@ -1,14 +1,15 @@
-%include "./src_asm/include/define.s"
-%include "./src_asm/include/macro.s"
-
-BITS    16
-
-section .text
+%include "./src_asm/modules/real/itoa.s"
+%include "./src_asm/modules/real/get_drive_param.s"
+%include "./src_asm/modules/real/get_font_addr.s"
+%include "./src_asm/modules/real/get_mem_info.s"
+%include "./src_asm/modules/real/kbc.s"
 
 global  stage_2, puts, putc, reboot, read_chs
 
 stage_2:
-    cdecl   puts, stage2_str
+    cdecl   puts, .hello_msg
+.hello_msg  db "this is stage 2", 0x0a, 0x0d, 0
+
 
 get_drive:
     cdecl   get_drive_param, BOOT
@@ -58,34 +59,4 @@ sleep:
 .msg  db "sleep...", 0x0a, 0x0d, 0
 
 
-
-%include "./src_asm/modules/real/puts.s"
-%include "./src_asm/modules/real/putc.s"
-%include "./src_asm/modules/real/itoa.s"
-%include "./src_asm/modules/real/reboot.s"
-%include "./src_asm/modules/real/read_chs.s"
-%include "./src_asm/modules/real/get_drive_param.s"
-%include "./src_asm/modules/real/get_font_addr.s"
-%include "./src_asm/modules/real/get_mem_info.s"
-%include "./src_asm/modules/real/kbc.s"
-
-section .data
-
-BOOT:             ; ブートドライブに関する情報
-    istruc drive
-        at drive.no,    dw 0
-        at drive.cyln,  dw 0
-        at drive.head,  dw 0
-        at drive.sect,  dw 2
-    iend
-
-; 7c00 in book
-FONT:
-    .segment    dw 0
-    .offset     dw 0
-
-ACPI_DATA:
-    .adr    dd 0
-    .len    dd 0
-
-stage2_str  db "this is stage 2", 0x0a, 0x0d, 0
+times   BOOT_SIZE - ($ - $$) db 0x00

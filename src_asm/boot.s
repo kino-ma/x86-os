@@ -41,10 +41,10 @@ ipl:
     cmp     ax, bx
     je      boot_success
 boot_error:
-    cdecl puts, error
-    call reboot
+    cdecl   puts, error
+    call    reboot
 boot_success:
-    jmp STAGE2_ADDR     ; next stage
+    jmp     stage_2     ; next stage
 
 hello:	db "hello boot loader", 0x0A, 0x0D, 0
 error:  db "Error: sector read", 0x0a, 0x0d, 0
@@ -58,6 +58,7 @@ BOOT:             ; ブートドライブに関する情報
         at drive.sect,  dw 2
     iend
 
+
 %include "./src_asm/modules/real/puts.s"
 %include "./src_asm/modules/real/reboot.s"
 %include "./src_asm/modules/real/read_chs.s"
@@ -65,5 +66,15 @@ BOOT:             ; ブートドライブに関する情報
     times	510 - ($ - $$) db 0x00
     db		0x55, 0xAA
 
-
 ; 512 ~  ==stage2==
+; 0x7e00 ~ 0x7e04
+FONT:
+    .segment    dw 0
+    .offset     dw 0
+
+; 0x7e04 ~ 0x7e0c
+ACPI_DATA:
+    .adr    dd 0
+    .len    dd 0
+
+%include "./src_asm/stage_2.s"
