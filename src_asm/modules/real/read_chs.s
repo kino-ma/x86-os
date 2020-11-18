@@ -60,8 +60,14 @@ read_loop:
 
 read_fail:
     cdecl   puts, fail_msg
+    cdecl   itoa, ax, .buf, 4, 16, 0b0100
+    cdecl   puts, .ax_m
+    cdecl   puts, .buf
     mov     ax, 0x0000      ; clear return value
     jmp     read_finish     ; break
+
+.buf    db "....", 0x0a, 0x0d, 0
+.ax_m   db "ax = ", 0
 
 ; .11E
 read_success:

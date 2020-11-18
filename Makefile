@@ -45,8 +45,9 @@ IMG := boot.img
 default: qemu
 
 
-$(IMG): $(BOOT_LOAD) #$(KERNEL)
+$(IMG): $(BOOT_LOAD) $(KERNEL)
 	cp $(BOOT_LOAD) $(IMG)
+	cat $(KERNEL) >> $(IMG)
 
 $(BOOT_LOAD): $(SRC_ASM_BOOT) $(SRC_ASM_STAGE2) $(MODULES_REAL) $(INCLUDES)
 	nasm $(SRC_ASM_BOOT) -o $(BOOT_LOAD)

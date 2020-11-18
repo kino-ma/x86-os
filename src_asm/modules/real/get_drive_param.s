@@ -15,19 +15,30 @@ get_drive_param:
     push    si
     push    di
 
-; start
+.start:
     mov     si, [bp + 4]        ; dst drive struct
-    mov     ax, 0               ; initialize Disk Base Table Pointer
+    mov     ax, 0x0000          ; initialize Disk Base Table Pointer
     mov     es, ax
     mov     di, ax              ; ES = DI = 0
 
     mov     ah, 8               ; specify function to call - get drive param
-    mov     di, [si + drive.no] ; specify disk no.
+    mov     dl, [si + drive.no] ; specify disk no.
+
+    ; add
+    cdecl   puts, .start_m
+    cdecl   itoa, es, .buff, 4, 16, 0b0000
+    cdecl   puts, .buff
+    cdecl   itoa, di, .buff, 4, 16, 0b0000
+    cdecl   puts, .buff
+    cdecl   puts, .fin_m
+    ; done
+
     int     0x13                ; BIOS call (disk)
 
-    jc      get_fail
+    jc      .fail
 
-get_success:
+.success:
+    cdecl   puts, .success_msg
     mov     al, cl          ;
     and     ax, 0b00111111  ; AX = cl[5:0] // sector count
 
@@ -43,12 +54,17 @@ get_success:
     mov     [si + drive.sect], ax   ; sector
 
     mov     ax, 1       ; return "success"
-    jmp     get_finish
+    jmp     .finish
 
-get_fail:
+.fail:
+    cdecl   puts, .fail_msg
+    cdecl   itoa, ax, .buff, 4, 16, 0b0100
+    cdecl   puts, .ah_m
+    cdecl   puts, .buff
+    cdecl   puts, .fin_m
     mov     ax, 0   ; return 0 (error)
 
-get_finish:
+.finish:
     push    di
     push    si
     push    es
@@ -59,3 +75,12 @@ get_finish:
     pop     bp
 
     ret
+
+
+.fail_msg   db "get fail", 0x0a, 0x0d, 0
+.success_msg   db "get success", 0x0a, 0x0d, 0
+
+.start_m   db "ES:DI = ", 0
+.fin_m  db 0x0a, 0x0d, 0
+.ah_m   db "ax = ", 0
+.buff   db "....", 0
